@@ -1,5 +1,6 @@
 Django>=5.2,<5.3
 xhtml2pdf==0.2.17      # آخرین نسخه stable، fixes DoS برای <=0.2.16
+pycairo==1.26.0        # نسخه دارای wheel آماده؛ جلوگیری از نیاز به system-level cairo
 pytest==8.4.2
 pytest-django==4.11.1
 PyPDF2==3.0.1
