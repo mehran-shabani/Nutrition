@@ -13,6 +13,8 @@ jobs:
   tests:
     name: Test suite (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    env:
+      DJANGO_DEBUG: "True"
     strategy:
       fail-fast: false
       matrix:
