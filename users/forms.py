@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 from django import forms
 
 from .models import HealthCondition, Profile
@@ -48,9 +50,13 @@ class ProfileForm(forms.ModelForm):
             "dietary_preferences": "علایق غذایی",
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["health_conditions"].queryset = HealthCondition.objects.all()
+        health_field = cast(
+            forms.ModelMultipleChoiceField,
+            self.fields["health_conditions"],
+        )
+        health_field.queryset = HealthCondition.objects.all()
 
 
 class HealthConditionForm(forms.ModelForm):

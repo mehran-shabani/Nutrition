@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from decimal import Decimal
 
 import pytest
@@ -6,7 +7,9 @@ from logs.calorie_math import calculate_bmr, calculate_tdee
 from users.models import Profile
 
 
-def test_calculate_bmr_mifflin_st_jeor(profile_factory):
+def test_calculate_bmr_mifflin_st_jeor(
+    profile_factory: Callable[..., Profile],
+) -> None:
     profile = profile_factory(
         weight_kg=Decimal("70"),
         height_cm=Decimal("175"),
@@ -26,7 +29,12 @@ def test_calculate_bmr_mifflin_st_jeor(profile_factory):
         (Profile.ActivityLevel.MODERATE, Profile.Goal.GAIN, 2811.11875),
     ],
 )
-def test_calculate_tdee_with_activity_and_goal(profile_factory, activity, goal, expected):
+def test_calculate_tdee_with_activity_and_goal(
+    profile_factory: Callable[..., Profile],
+    activity: str,
+    goal: str,
+    expected: float,
+) -> None:
     profile = profile_factory(
         weight_kg=Decimal("70"),
         height_cm=Decimal("175"),

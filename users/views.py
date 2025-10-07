@@ -1,4 +1,7 @@
+from typing import Any
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 
@@ -14,11 +17,11 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "users/profile_form.html"
     success_url = reverse_lazy("users:profile")
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset: QuerySet[Profile] | None = None) -> Profile:
         profile, _ = Profile.objects.get_or_create(user=self.request.user)
         return profile
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         profile = context.get("object")
         if profile and profile.age and profile.height_cm and profile.weight_kg:

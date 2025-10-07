@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import timedelta
-from decimal import Decimal, ROUND_HALF_UP
+from datetime import date, timedelta
+from decimal import ROUND_HALF_UP, Decimal
 from itertools import cycle
 
 from django.db import transaction
@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from foods.models import Food
 from logs.calorie_math import calculate_tdee
+from users.models import Profile
 
 from .models import PlanItem, WeeklyPlan
 
@@ -24,7 +25,10 @@ def _servings_for_target(food: Food, daily_calories: float) -> Decimal:
 
 
 @transaction.atomic
-def generate_weekly_plan(profile, start_date=None) -> WeeklyPlan:
+def generate_weekly_plan(
+    profile: Profile,
+    start_date: date | None = None,
+) -> WeeklyPlan:
     """Create or refresh a weekly plan for the given profile."""
 
     if start_date is None:

@@ -1,12 +1,18 @@
+from collections.abc import Callable
 from decimal import Decimal
 
 import pytest
 
+from foods.models import Food
 from logs.models import MealLog
+from users.models import Profile
 
 
 @pytest.mark.django_db
-def test_meal_log_macro_totals(profile_factory, food_factory):
+def test_meal_log_macro_totals(
+    profile_factory: Callable[..., Profile],
+    food_factory: Callable[..., Food],
+) -> None:
     profile = profile_factory()
     food = food_factory(
         calories=Decimal("250"),

@@ -1,6 +1,9 @@
+from typing import Any, cast
+
 from django import forms
 
 from foods.models import Food
+
 from .models import MealLog
 
 
@@ -31,6 +34,10 @@ class MealLogForm(forms.ModelForm):
             "notes": "یادداشت",
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["food"].queryset = Food.objects.filter(is_public=True)
+        food_field = cast(
+            forms.ModelChoiceField,
+            self.fields["food"],
+        )
+        food_field.queryset = Food.objects.filter(is_public=True)

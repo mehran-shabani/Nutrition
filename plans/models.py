@@ -58,7 +58,15 @@ class PlanItem(models.Model):
         @classmethod
         def ordered(cls) -> list[tuple[int, str]]:
             # Start week on Saturday per Iranian locale
-            order = [cls.SATURDAY, cls.SUNDAY, cls.MONDAY, cls.TUESDAY, cls.WEDNESDAY, cls.THURSDAY, cls.FRIDAY]
+            order = [
+                cls.SATURDAY,
+                cls.SUNDAY,
+                cls.MONDAY,
+                cls.TUESDAY,
+                cls.WEDNESDAY,
+                cls.THURSDAY,
+                cls.FRIDAY,
+            ]
             return [(choice.value, choice.label) for choice in order]
 
     class MealType(models.TextChoices):

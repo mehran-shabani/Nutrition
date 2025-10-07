@@ -1,29 +1,36 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from decimal import Decimal
 from itertools import count
-from typing import Callable
+from typing import Any, cast
 
 import pytest
+from django.contrib.auth.models import AbstractBaseUser
 
 from foods.models import Food
 from users.models import Profile
 
 
 @pytest.fixture
-def user_factory(django_user_model) -> Callable[..., object]:
+def user_factory(
+    django_user_model: Any,
+) -> Callable[..., AbstractBaseUser]:
     sequence = count(1)
 
-    def factory(**kwargs):
+    def factory(**kwargs: Any) -> AbstractBaseUser:
         index = next(sequence)
         username = kwargs.pop("username", f"user{index}")
         email = kwargs.pop("email", f"user{index}@example.com")
         password = kwargs.pop("password", "testpass123")
-        user = django_user_model.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            **kwargs,
+        user = cast(
+            AbstractBaseUser,
+            django_user_model.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                **kwargs,
+            ),
         )
         return user
 
@@ -31,8 +38,10 @@ def user_factory(django_user_model) -> Callable[..., object]:
 
 
 @pytest.fixture
-def profile_factory(user_factory) -> Callable[..., Profile]:
-    def factory(**kwargs) -> Profile:
+def profile_factory(
+    user_factory: Callable[..., AbstractBaseUser],
+) -> Callable[..., Profile]:
+    def factory(**kwargs: Any) -> Profile:
         user = kwargs.pop("user", None) or user_factory()
         defaults = {
             "age": 30,
@@ -53,7 +62,7 @@ def profile_factory(user_factory) -> Callable[..., Profile]:
 def food_factory() -> Callable[..., Food]:
     sequence = count(1)
 
-    def factory(**kwargs) -> Food:
+    def factory(**kwargs: Any) -> Food:
         index = next(sequence)
         defaults = {
             "name": f"Test Food {index}",
