@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}برنامه غذایی{% endblock %}
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+  <div>
+    <h4 class="mb-1">برنامه غذایی هفتگی</h4>
+    {% if plan %}
+      <p class="mb-0 text-muted">از {{ plan.start_date|date:"Y/m/d" }} تا {{ plan.end_date|date:"Y/m/d" }}</p>
+    {% endif %}
+  </div>
+  <div class="btn-group" role="group">
+    <a class="btn btn-outline-primary" href="{% url 'plans:generate' %}">ایجاد برنامه جدید</a>
+    <a class="btn btn-outline-secondary" href="{% url 'plans:refresh' %}">بازسازی هفته جاری</a>
+    {% if plan %}
+      <a class="btn btn-success" href="{% url 'plans:pdf' plan.pk %}">دریافت PDF</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if plan %}
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+      <h6 class="mb-0">جمع‌بندی روزانه</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered plan-table">
+          <thead class="table-light">
+            <tr>
+              <th>روز</th>
+              {% for meal_value, meal_label in meal_choices %}
+                <th>{{ meal_label }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for day in day_rows %}
+              <tr>
+                <td>{{ day.label }}</td>
+                {% for item in day.items %}
+                  {% if item %}
+                    <td>
+                      <strong>{{ item.food.name }}</strong><br>
+                      <span class="text-muted small">{{ item.servings }} × {{ item.food.serving_unit }}</span><br>
+                      <span class="small">{{ item.total_calories|floatformat:0 }} kcal</span>
+                      {% if item.notes %}<div class="text-muted small">{{ item.notes }}</div>{% endif %}
+                    </td>
+                  {% else %}
+                    <td>-</td>
+                  {% endif %}
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info">برای مشاهده برنامه ابتدا یکی ایجاد کنید.</div>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white"><h6 class="mb-0">پروفایل</h6></div>
+      <div class="card-body">
+        <p class="mb-1">قد: {{ profile.height_cm|default:"-" }} سانتی‌متر</p>
+        <p class="mb-1">وزن: {{ profile.weight_kg|default:"-" }} کیلوگرم</p>
+        <p class="mb-0">هدف: {{ profile.get_goal_display }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white"><h6 class="mb-0">اهداف روزانه</h6></div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between"><span>کالری</span><strong>{{ macro_targets.calories|floatformat:0 }} kcal</strong></li>
+          <li class="list-group-item d-flex justify-content-between"><span>پروتئین</span><strong>{{ macro_targets.protein_g|floatformat:0 }} g</strong></li>
+          <li class="list-group-item d-flex justify-content-between"><span>کربوهیدرات</span><strong>{{ macro_targets.carbs_g|floatformat:0 }} g</strong></li>
+          <li class="list-group-item d-flex justify-content-between"><span>چربی</span><strong>{{ macro_targets.fat_g|floatformat:0 }} g</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
