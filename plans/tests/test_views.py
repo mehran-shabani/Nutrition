@@ -1,7 +1,10 @@
 from decimal import Decimal
+from io import BytesIO
 
 import pytest
 from django.urls import reverse
+
+import PyPDF2
 
 from plans.plan_engine import generate_weekly_plan
 from users.models import Profile
@@ -29,3 +32,6 @@ def test_plan_pdf_view_returns_pdf_response(client, profile_factory, food_factor
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
     assert len(response.content) > 0
+
+    pdf_reader = PyPDF2.PdfReader(BytesIO(response.content))
+    assert len(pdf_reader.pages) > 0
