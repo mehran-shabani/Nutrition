@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: سوالات عمومی
     url: https://github.com/OWNER/REPO/discussions
-    about: برای سوالات غیرمرتبط با باگ یا feature جدید از Discussions استفاده کنید.
+    about: برای سوالات غیرمرتبط با باگ یا feature جدید از Discussions استفاده کنید و حتماً OWNER/REPO را با نام مخزن خود جایگزین کنید.

@@ -31,7 +31,15 @@ RUN addgroup --system app \
 WORKDIR /app
 
 COPY --from=builder /opt/venv /opt/venv
-COPY . .
+COPY manage.py ./
+COPY nutrition_bot/ ./nutrition_bot/
+COPY chat/ ./chat/
+COPY foods/ ./foods/
+COPY logs/ ./logs/
+COPY plans/ ./plans/
+COPY templates/ ./templates/
+COPY users/ ./users/
+COPY static/ ./static/
 
 RUN chown -R app:app /app
 USER app
