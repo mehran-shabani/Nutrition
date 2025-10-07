@@ -1,0 +1,56 @@
+name: گزارش باگ
+description: باگ یا مشکل موجود را گزارش کنید
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        لطفاً قبل از ارسال، Issues موجود را بررسی کنید تا از تکراری نبودن گزارش مطمئن شوید.
+  - type: textarea
+    id: current
+    attributes:
+      label: رفتار فعلی
+      description: چه اتفاقی می‌افتد؟
+      placeholder: توضیح واضح و دقیق از رفتار فعلی
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: رفتار مورد انتظار
+      description: انتظار داشتید چه اتفاقی بیفتد؟
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: مراحل بازتولید
+      description: مراحل دقیق برای بازتولید مشکل
+      placeholder: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: نسخه/برنچ
+      description: نسخه اپلیکیشن یا برنچی که روی آن باگ رخ می‌دهد
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: لاگ‌ها یا اسکرین‌شات‌ها
+      description: در صورت امکان خروجی خطا یا اسکرین‌شات مرتبط را قرار دهید
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: بررسی‌ها
+      options:
+        - label: من اسناد و Issues باز موجود را بررسی کرده‌ام
+          required: true
+        - label: این مشکل مربوط به یک نسخه تغییریافته محلی نیست
+          required: true

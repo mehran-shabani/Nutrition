@@ -3,3 +3,4 @@ xhtml2pdf==0.2.17      # آخرین نسخه stable، fixes DoS برای <=0.2.1
 pytest==8.4.2
 pytest-django==4.11.1
 PyPDF2==3.0.1
+gunicorn==22.0.0

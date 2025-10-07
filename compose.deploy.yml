@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  web:
+    image: ${IMAGE_REF:?Set IMAGE_REF to ghcr.io/owner/repo:tag}
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: nutrition_bot.settings
+    command: gunicorn nutrition_bot.wsgi:application --bind 0.0.0.0:8000 --workers 4
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on: []
+
+volumes:
+  static_volume:
+  media_volume:

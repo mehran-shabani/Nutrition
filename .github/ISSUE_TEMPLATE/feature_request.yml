@@ -1,0 +1,37 @@
+name: درخواست قابلیت جدید
+description: پیشنهاد یا ایده جدید خود را مطرح کنید
+labels: [enhancement]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: خلاصه
+      description: ایده یا مشکل چیست؟
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: انگیزه/ارزش
+      description: این قابلیت چه ارزشی ایجاد می‌کند؟
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: راهکار پیشنهادی
+      description: اگر پیشنهادی برای پیاده‌سازی دارید اینجا بنویسید
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: گزینه‌های جایگزین
+      description: آیا رویکرد دیگری را بررسی کرده‌اید؟
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: بررسی‌ها
+      options:
+        - label: من این درخواست را در Issues موجود پیدا نکردم
+          required: true
+        - label: این درخواست با اهداف پروژه همسو است
+          required: true
