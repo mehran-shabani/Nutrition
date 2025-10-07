@@ -1,29 +1,75 @@
-name: Release Please
+name: Auto Release & Asset
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
-
-permissions:
-  contents: write
-  pull-requests: write
+    branches:
+      - main
 
 jobs:
-  release:
+  bump-version-release:
     runs-on: ubuntu-latest
-    steps:
-      - name: Ensure PAT configured for release PRs
-        if: ${{ secrets.RELEASE_PLEASE_TOKEN == '' }}
-        run: |
-          echo "::error::The release workflow requires the RELEASE_PLEASE_TOKEN secret."
-          echo "::error::Create a fine-grained personal access token with \"contents: read\" and \"pull requests: write\" permissions and add it as the RELEASE_PLEASE_TOKEN repository secret."
-          exit 1
 
-      - name: Run release-please
-        if: ${{ secrets.RELEASE_PLEASE_TOKEN != '' }}
-        uses: googleapis/release-please-action@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          python-version: '3.x'
+
+      - name: Read and bump version
+        id: version
+        run: |
+          # خواندن نسخه فعلی از فایل version.txt، اگر وجود ندارد مقدار اولیه می‌گذارد
+          if [ -f version.txt ]; then
+            VERSION=$(cat version.txt)
+          else
+            VERSION="1.0.0"
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+
+          # افزایش یک صدم نسخه (PATCH)
+          PATCH=$((PATCH + 1))
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "$NEW_VERSION" > version.txt
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit new version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version.txt
+          git commit -m "Bump version to ${{ steps.version.outputs.new_version }}" || echo "No changes to commit"
+          git push
+
+      - name: Create tag
+        run: |
+          git fetch --tags
+          TAG="v${{ steps.version.outputs.new_version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists."
+          else
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: Package repository as zip
+        run: |
+          ZIPNAME="repo-${{ steps.version.outputs.new_version }}.zip"
+          zip -r $ZIPNAME . -x ".git/*" ".github/*"
+          echo "zip_name=$ZIPNAME" >> $GITHUB_ENV
+
+      - name: Create GitHub Release & upload asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.new_version }}
+          name: Release v${{ steps.version.outputs.new_version }}
+          files: ${{ env.zip_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
