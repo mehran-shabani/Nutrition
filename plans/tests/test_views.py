@@ -1,17 +1,23 @@
+from collections.abc import Callable
 from decimal import Decimal
 from io import BytesIO
 
+import PyPDF2
 import pytest
+from django.test import Client
 from django.urls import reverse
 
-import PyPDF2
-
+from foods.models import Food
 from plans.plan_engine import generate_weekly_plan
 from users.models import Profile
 
 
 @pytest.mark.django_db
-def test_plan_pdf_view_returns_pdf_response(client, profile_factory, food_factory):
+def test_plan_pdf_view_returns_pdf_response(
+    client: Client,
+    profile_factory: Callable[..., Profile],
+    food_factory: Callable[..., Food],
+) -> None:
     profile = profile_factory(
         weight_kg=Decimal("72"),
         height_cm=Decimal("178"),

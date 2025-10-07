@@ -1,4 +1,8 @@
+from typing import Any, cast
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 
@@ -11,8 +15,9 @@ class MealLogListView(LoginRequiredMixin, ListView):
     template_name = "logs/meal_log_list.html"
     context_object_name = "logs"
 
-    def get_queryset(self):
-        return MealLog.objects.filter(user=self.request.user).select_related("food")
+    def get_queryset(self) -> QuerySet[MealLog]:
+        user = cast(Any, self.request.user)
+        return MealLog.objects.filter(user=user).select_related("food")
 
 
 class MealLogCreateView(LoginRequiredMixin, CreateView):
@@ -21,6 +26,6 @@ class MealLogCreateView(LoginRequiredMixin, CreateView):
     template_name = "logs/meal_log_form.html"
     success_url = reverse_lazy("logs:list")
 
-    def form_valid(self, form):
-        form.instance.user = self.request.user
+    def form_valid(self, form: MealLogForm) -> HttpResponse:
+        form.instance.user = cast(Any, self.request.user)
         return super().form_valid(form)

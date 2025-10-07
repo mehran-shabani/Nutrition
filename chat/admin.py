@@ -1,3 +1,3 @@
-from django.contrib import admin
+"""Admin customisations for the chat application."""
 
-# Register your models here.
+# Admin registrations will be added when chat models are introduced.

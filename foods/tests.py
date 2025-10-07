@@ -1,3 +1,3 @@
-from django.test import TestCase
+"""Tests for the foods application."""
 
-# Create your tests here.
+# Real tests will be added as the foods app evolves.

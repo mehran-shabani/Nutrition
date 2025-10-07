@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Dict
+from typing import Any
 
 from users.models import Profile
 
-
-ACTIVITY_MULTIPLIERS: Dict[str, float] = {
+ACTIVITY_MULTIPLIERS: dict[str, float] = {
     Profile.ActivityLevel.SEDENTARY: 1.2,
     Profile.ActivityLevel.LIGHT: 1.375,
     Profile.ActivityLevel.MODERATE: 1.55,
@@ -15,14 +14,14 @@ ACTIVITY_MULTIPLIERS: Dict[str, float] = {
     Profile.ActivityLevel.ATHLETE: 1.9,
 }
 
-GOAL_MODIFIERS: Dict[str, float] = {
+GOAL_MODIFIERS: dict[str, float] = {
     Profile.Goal.LOSE: 0.85,
     Profile.Goal.MAINTAIN: 1.0,
     Profile.Goal.GAIN: 1.1,
 }
 
 
-def _to_decimal(value) -> Decimal:
+def _to_decimal(value: Any) -> Decimal:
     if value in (None, ""):
         return Decimal(0)
     if isinstance(value, Decimal):
@@ -60,7 +59,10 @@ def calculate_tdee(profile: Profile) -> float:
     return float(bmr * activity_multiplier * goal_multiplier)
 
 
-def distribute_macros(calories: float, profile: Profile | None = None) -> dict[str, float]:
+def distribute_macros(
+    calories: float,
+    profile: Profile | None = None,
+) -> dict[str, float]:
     """Return target macro distribution (grams) for a given calorie intake."""
 
     if calories <= 0:

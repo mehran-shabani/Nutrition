@@ -1,5 +1,7 @@
-from django.db.models import Q
-from django.http import JsonResponse
+from typing import Any
+
+from django.db.models import Q, QuerySet
+from django.http import HttpRequest, JsonResponse
 from django.views.generic import ListView, View
 
 from .forms import FoodSearchForm
@@ -11,8 +13,9 @@ class FoodListView(ListView):
     template_name = "foods/food_list.html"
     context_object_name = "foods"
     paginate_by = 20
+    form: FoodSearchForm
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Food]:
         queryset = Food.objects.filter(is_public=True).order_by("name")
         self.form = FoodSearchForm(self.request.GET or None)
         if self.form.is_valid():
@@ -23,14 +26,19 @@ class FoodListView(ListView):
                 )
         return queryset
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["form"] = getattr(self, "form", FoodSearchForm())
         return context
 
 
 class FoodAutocompleteView(View):
-    def get(self, request, *args, **kwargs):
+    def get(
+        self,
+        request: HttpRequest,
+        *args: Any,
+        **kwargs: Any,
+    ) -> JsonResponse:
         query = request.GET.get("q", "")
         foods = Food.objects.filter(is_public=True)
         if query:

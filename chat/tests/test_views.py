@@ -1,9 +1,12 @@
+from typing import cast
+
 import pytest
+from django.test import Client
 from django.urls import reverse
 
 
 @pytest.mark.django_db
-def test_chat_onboarding_flow_collects_history(client):
+def test_chat_onboarding_flow_collects_history(client: Client) -> None:
     url = reverse("chat:home")
 
     get_response = client.get(url)
@@ -13,7 +16,10 @@ def test_chat_onboarding_flow_collects_history(client):
     client.post(url, {"message": "سن من 30 است"})
     client.post(url, {"message": "قد من 175 است"})
 
-    session_history = client.session.get("chat_history")
+    session_history = cast(
+        list[dict[str, str]],
+        client.session.get("chat_history", []),
+    )
 
     assert len(session_history) == 2
     assert session_history[0]["user"] == "سن من 30 است"

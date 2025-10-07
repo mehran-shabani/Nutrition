@@ -1,3 +1,3 @@
-from django.db import models
+"""Database models for the chat application."""
 
-# Create your models here.
+# Models will be defined once chat functionality is implemented.
