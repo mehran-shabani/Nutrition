@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}گفتگو با دستیار{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">گفتگو با دستیار تغذیه</h5>
+        <span class="text-muted small">نسخه آزمایشی</span>
+      </div>
+      <div class="card-body d-flex flex-column" style="min-height: 320px;">
+        <div class="d-flex flex-column flex-grow-1 mb-3">
+          {% if history %}
+            {% for message in history %}
+              <div class="chat-bubble user align-self-end">{{ message.user }}</div>
+              <div class="chat-bubble bot">{{ message.bot }}</div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted text-center my-auto">گفتگو خالی است. سوالی بپرسید!</p>
+          {% endif %}
+        </div>
+        <form method="post" class="mt-auto">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.message.label_tag }}
+            {{ form.message }}
+            {% if form.message.errors %}
+              <div class="text-danger small">{{ form.message.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="text-end">
+            <button class="btn btn-primary" type="submit">ارسال</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

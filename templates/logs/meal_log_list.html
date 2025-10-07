@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}سابقه وعده‌ها{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">سابقه وعده‌ها</h4>
+  <a class="btn btn-primary" href="{% url 'logs:create' %}">ثبت وعده جدید</a>
+</div>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>تاریخ</th>
+            <th>وعده</th>
+            <th>غذا</th>
+            <th>تعداد سهم</th>
+            <th>کالری کل</th>
+            <th>یادداشت</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td>{{ log.consumed_at|date:"Y/m/d H:i" }}</td>
+              <td>{{ log.get_meal_type_display }}</td>
+              <td>{{ log.food.name }}</td>
+              <td>{{ log.quantity }}</td>
+              <td>{{ log.total_calories|floatformat:0 }}</td>
+              <td>{{ log.notes|default:"-" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted">هنوز وعده‌ای ثبت نشده است.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}پروفایل کاربری{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">اطلاعات پروفایل</h5>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+              {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-success">ذخیره تغییرات</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">اهداف تغذیه‌ای</h5>
+      </div>
+      <div class="card-body">
+        {% if macro_targets %}
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><span>کالری روزانه</span><strong>{{ macro_targets.calories|floatformat:0 }} kcal</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>پروتئین</span><strong>{{ macro_targets.protein_g|floatformat:0 }} g</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>کربوهیدرات</span><strong>{{ macro_targets.carbs_g|floatformat:0 }} g</strong></li>
+            <li class="list-group-item d-flex justify-content-between"><span>چربی</span><strong>{{ macro_targets.fat_g|floatformat:0 }} g</strong></li>
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">لطفا قد، وزن و سن خود را وارد کنید تا محاسبات انجام شود.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

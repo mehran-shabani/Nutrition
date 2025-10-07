@@ -1,0 +1,74 @@
+[
+  {
+    "model": "foods.food",
+    "pk": 1,
+    "fields": {
+      "name": "سیب",
+      "description": "سیب تازه متوسط",
+      "brand": "",
+      "serving_size": "100.00",
+      "serving_unit": "g",
+      "calories": "52.00",
+      "protein_g": "0.30",
+      "carbs_g": "14.00",
+      "fat_g": "0.20",
+      "is_public": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "foods.food",
+    "pk": 2,
+    "fields": {
+      "name": "سینه مرغ پخته",
+      "description": "سینه مرغ بدون پوست، پخته شده",
+      "brand": "خانگی",
+      "serving_size": "120.00",
+      "serving_unit": "g",
+      "calories": "198.00",
+      "protein_g": "37.00",
+      "carbs_g": "0.00",
+      "fat_g": "4.00",
+      "is_public": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "foods.food",
+    "pk": 3,
+    "fields": {
+      "name": "برنج قهوه‌ای پخته",
+      "description": "برنج قهوه‌ای، پخته شده",
+      "brand": "",
+      "serving_size": "150.00",
+      "serving_unit": "g",
+      "calories": "165.00",
+      "protein_g": "3.60",
+      "carbs_g": "34.00",
+      "fat_g": "1.40",
+      "is_public": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "foods.food",
+    "pk": 4,
+    "fields": {
+      "name": "ماست یونانی",
+      "description": "ماست یونانی کم چرب",
+      "brand": "لبنیات محلی",
+      "serving_size": "170.00",
+      "serving_unit": "g",
+      "calories": "100.00",
+      "protein_g": "17.00",
+      "carbs_g": "6.00",
+      "fat_g": "0.70",
+      "is_public": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+]

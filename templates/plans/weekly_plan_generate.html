@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}ایجاد برنامه{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white"><h5 class="mb-0">ایجاد برنامه هفتگی</h5></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ form.start_date.label_tag }}
+          {{ form.start_date }}
+          {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
+          <div class="d-flex justify-content-between mt-3">
+            <a class="btn btn-link" href="{% url 'plans:detail' %}">انصراف</a>
+            <button class="btn btn-primary" type="submit">ساخت برنامه</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

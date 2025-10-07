@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}بانک غذا{% endblock %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-header bg-white">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <h5 class="mb-0">بانک غذا</h5>
+      <form method="get" class="d-flex gap-2 w-100 w-md-50">
+        {{ form.query }}
+        <button type="submit" class="btn btn-outline-primary">جستجو</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>نام</th>
+            <th>برند</th>
+            <th>سایز سهم</th>
+            <th>کالری</th>
+            <th>پروتئین (g)</th>
+            <th>کربوهیدرات (g)</th>
+            <th>چربی (g)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for food in foods %}
+            <tr>
+              <td>{{ food.name }}</td>
+              <td>{{ food.brand|default:"-" }}</td>
+              <td>{{ food.serving_size }} {{ food.serving_unit }}</td>
+              <td>{{ food.calories }}</td>
+              <td>{{ food.protein_g }}</td>
+              <td>{{ food.carbs_g }}</td>
+              <td>{{ food.fat_g }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="text-center text-muted">غذایی یافت نشد.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if is_paginated %}
+      <nav aria-label="صفحات">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">قبلی</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">صفحه {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">بعدی</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const input = document.querySelector('input[name="query"]');
+  if (input) {
+    let timer = null;
+    const list = document.createElement('div');
+    list.className = 'list-group position-absolute mt-2 w-50';
+    input.parentNode.appendChild(list);
+
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const value = input.value.trim();
+        if (!value) {
+          list.innerHTML = '';
+          return;
+        }
+        fetch(`{% url 'foods:autocomplete' %}?q=${encodeURIComponent(value)}`)
+          .then(response => response.json())
+          .then(data => {
+            list.innerHTML = '';
+            data.results.forEach(item => {
+              const el = document.createElement('a');
+              el.className = 'list-group-item list-group-item-action';
+              el.textContent = `${item.name} (${item.calories} kcal)`;
+              el.addEventListener('click', () => {
+                input.value = item.name;
+                list.innerHTML = '';
+              });
+              list.appendChild(el);
+            });
+          });
+      }, 300);
+    });
+  }
+</script>
+{% endblock %}

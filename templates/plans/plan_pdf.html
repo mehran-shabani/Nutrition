@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { font-family: DejaVu Sans, sans-serif; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+      th, td { border: 1px solid #333; padding: 6px; text-align: center; }
+      h1, h2 { text-align: center; }
+    </style>
+  </head>
+  <body>
+    <h1>برنامه غذایی هفتگی</h1>
+    <h2>{{ plan.start_date|date:"Y/m/d" }} تا {{ plan.end_date|date:"Y/m/d" }}</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>روز</th>
+          {% for meal_value, meal_label in meal_choices %}
+            <th>{{ meal_label }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for day_value, day_label in day_choices %}
+          <tr>
+            <td>{{ day_label }}</td>
+            {% for meal_value, meal_label in meal_choices %}
+              {% with item=plan.items.filter(day_of_week=day_value, meal_type=meal_value).first %}
+                {% if item %}
+                  <td>
+                    <strong>{{ item.food.name }}</strong><br/>
+                    {{ item.servings }} × {{ item.food.serving_unit }}<br/>
+                    {{ item.total_calories|floatformat:0 }} kcal
+                  </td>
+                {% else %}
+                  <td>-</td>
+                {% endif %}
+              {% endwith %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>
