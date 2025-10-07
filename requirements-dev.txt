@@ -1,5 +1,5 @@
 -r requirements.txt
-ruff==0.6.2
+ruff==0.13.3
 mypy==1.11.1
 django-stubs==5.0.2
 django-stubs-ext==5.0.2
