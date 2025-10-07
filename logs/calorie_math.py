@@ -39,11 +39,11 @@ def calculate_bmr(profile: Profile) -> float:
     if not weight or not height or not age:
         return 0.0
 
-    base = (10 * weight) + (6.25 * height) - (5 * age)
+    base = (Decimal("10") * weight) + (Decimal("6.25") * height) - (Decimal("5") * age)
     if profile.gender == Profile.Gender.MALE:
-        base += 5
+        base += Decimal("5")
     else:
-        base -= 161
+        base -= Decimal("161")
     return float(base)
 
 

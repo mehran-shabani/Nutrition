@@ -22,21 +22,19 @@
         </tr>
       </thead>
       <tbody>
-        {% for day_value, day_label in day_choices %}
+        {% for day in day_rows %}
           <tr>
-            <td>{{ day_label }}</td>
-            {% for meal_value, meal_label in meal_choices %}
-              {% with item=plan.items.filter(day_of_week=day_value, meal_type=meal_value).first %}
-                {% if item %}
-                  <td>
-                    <strong>{{ item.food.name }}</strong><br/>
-                    {{ item.servings }} × {{ item.food.serving_unit }}<br/>
-                    {{ item.total_calories|floatformat:0 }} kcal
-                  </td>
-                {% else %}
-                  <td>-</td>
-                {% endif %}
-              {% endwith %}
+            <td>{{ day.label }}</td>
+            {% for item in day.items %}
+              {% if item %}
+                <td>
+                  <strong>{{ item.food.name }}</strong><br/>
+                  {{ item.servings }} × {{ item.food.serving_unit }}<br/>
+                  {{ item.total_calories|floatformat:0 }} kcal
+                </td>
+              {% else %}
+                <td>&nbsp;</td>
+              {% endif %}
             {% endfor %}
           </tr>
         {% endfor %}

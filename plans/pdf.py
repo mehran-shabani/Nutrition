@@ -33,11 +33,27 @@ def _link_callback(uri: str, rel: str) -> str:
 
 def render_plan_pdf(weekly_plan, context: dict[str, Any] | None = None, template_name: str = "plans/plan_pdf.html") -> bytes:
     template = get_template(template_name)
+    items = list(weekly_plan.items.select_related("food").all())
+    day_choices = weekly_plan.items.model.DayOfWeek.ordered()
+    meal_choices = weekly_plan.items.model.MealType.choices
+    meal_keys = [value for value, _ in meal_choices]
+
+    items_by_day: dict[int, dict[str, Any]] = {}
+    for item in items:
+        items_by_day.setdefault(item.day_of_week, {})[item.meal_type] = item
+
+    day_rows = []
+    for day_value, day_label in day_choices:
+        day_map = items_by_day.get(day_value, {})
+        ordered_items = [day_map.get(meal_key) for meal_key in meal_keys]
+        day_rows.append({"label": day_label, "items": ordered_items})
+
     base_context = {
         "plan": weekly_plan,
-        "items": weekly_plan.items.select_related("food").all(),
-        "day_choices": weekly_plan.items.model.DayOfWeek.ordered(),
-        "meal_choices": weekly_plan.items.model.MealType.choices,
+        "items": items,
+        "day_choices": day_choices,
+        "meal_choices": meal_choices,
+        "day_rows": day_rows,
     }
     if context:
         base_context.update(context)
