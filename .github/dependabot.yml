@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "weekly"
     labels: ["deps"]
-    reviewers: ["org/team"]
+    # reviewers: ["your-org/real-team"]
     allow:
       - dependency-type: "all"
   - package-ecosystem: "github-actions"
@@ -13,4 +13,4 @@ updates:
     schedule:
       interval: "weekly"
     labels: ["deps"]
-    reviewers: ["org/team"]
+    # reviewers: ["your-org/real-team"]
