@@ -13,9 +13,17 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure PAT configured for release PRs
+        if: ${{ secrets.RELEASE_PLEASE_TOKEN == '' }}
+        run: |
+          echo "::error::The release workflow requires the RELEASE_PLEASE_TOKEN secret."
+          echo "::error::Create a fine-grained personal access token with \"contents: read\" and \"pull requests: write\" permissions and add it as the RELEASE_PLEASE_TOKEN repository secret."
+          exit 1
+
       - name: Run release-please
+        if: ${{ secrets.RELEASE_PLEASE_TOKEN != '' }}
         uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
