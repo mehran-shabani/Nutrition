@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   bump-version-release:
     runs-on: ubuntu-latest
@@ -13,15 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
       - name: Read and bump version
         id: version
         run: |
-          # خواندن نسخه فعلی از فایل version.txt، اگر وجود ندارد مقدار اولیه می‌گذارد
+          # خواندن نسخه فعلی از فایل version.txt، اگر نبود مقدار اولیه 1.0.0
           if [ -f version.txt ]; then
             VERSION=$(cat version.txt)
           else
@@ -29,13 +27,9 @@ jobs:
           fi
 
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-
-          # افزایش یک صدم نسخه (PATCH)
           PATCH=$((PATCH + 1))
-
           NEW_VERSION="$MAJOR.$MINOR.$PATCH"
           echo "$NEW_VERSION" > version.txt
-
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit new version
@@ -44,7 +38,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add version.txt
           git commit -m "Bump version to ${{ steps.version.outputs.new_version }}" || echo "No changes to commit"
-          git push
+          git push origin HEAD:main
 
       - name: Create tag
         run: |
