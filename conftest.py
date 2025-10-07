@@ -43,10 +43,7 @@ def profile_factory(user_factory) -> Callable[..., Profile]:
             "goal": Profile.Goal.MAINTAIN,
         }
         defaults.update(kwargs)
-        profile, _ = Profile.objects.get_or_create(user=user, defaults=defaults)
-        for field, value in defaults.items():
-            setattr(profile, field, value)
-        profile.save()
+        profile, _ = Profile.objects.update_or_create(user=user, defaults=defaults)
         return profile
 
     return factory
