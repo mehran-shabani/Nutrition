@@ -57,6 +57,11 @@ pytest
 ۲. پس از merge در `main`، Release Please به صورت خودکار Pull Request نسخه بعدی و `CHANGELOG.md` را می‌سازد.
 ۳. با merge شدن PR انتشار، تگ `vMAJOR.MINOR.PATCH` ایجاد و Release در GitHub منتشر می‌شود.
 
+> **نکتهٔ مهم:** به دلیل محدودیت‌های مخزن، کاربر `github-actions[bot]` اجازهٔ ساخت Pull Request را ندارد. برای اجرای موفق
+> workflow انتشار، یک [Fine-grained Personal Access Token](https://github.com/settings/personal-access-tokens/new) با دسترسی‌های
+> **Contents (read)** و **Pull requests (write)** ایجاد کرده و آن را با نام `RELEASE_PLEASE_TOKEN` در Secrets مخزن قرار دهید.
+> در غیر این صورت job انتشار با پیام خطای راهنما متوقف می‌شود.
+
 ### ساخت و مصرف ایمیج Docker
 
 ایمیج‌ها در [GitHub Container Registry](https://ghcr.io) با نام `ghcr.io/OWNER/REPO` منتشر می‌شوند (جایگزین کردن `OWNER/REPO` با نام واقعی).
