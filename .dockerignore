@@ -9,8 +9,6 @@ __pycache__/
 venv/
 .mypy_cache/
 .pytest_cache/
-static/
-media/
 node_modules/
 .coverage
 htmlcov/
