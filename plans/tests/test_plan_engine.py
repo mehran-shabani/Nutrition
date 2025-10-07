@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 import pytest
 
@@ -23,4 +24,4 @@ def test_generate_weekly_plan_creates_full_week(profile_factory, food_factory):
     daily_target = calculate_tdee(profile) / len(PlanItem.MealType.choices)
     for item in plan.items.all():
         assert item.total_calories == pytest.approx(daily_target, rel=0.2)
-        assert item.servings >= 0.25
+        assert item.servings >= Decimal("0.25")
