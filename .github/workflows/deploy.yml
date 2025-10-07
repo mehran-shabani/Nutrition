@@ -1,0 +1,95 @@
+name: Deploy
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check deployment secrets
+        id: check
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ] || [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_PATH" ]; then
+            echo "has_secrets=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_secrets=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip deployment (missing secrets)
+        if: steps.check.outputs.has_secrets != 'true'
+        run: 'echo "Deployment skipped: required secrets are not configured."'
+      - name: Checkout
+        if: steps.check.outputs.has_secrets == 'true'
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        if: steps.check.outputs.has_secrets == 'true'
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: Write env file
+        if: steps.check.outputs.has_secrets == 'true' && secrets.ENV_FILE != ''
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: |
+          printf '%s\n' "$ENV_FILE" > deploy.env
+
+      - name: Upload deployment assets
+        if: steps.check.outputs.has_secrets == 'true'
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$DEPLOY_PATH'"
+          scp -i ~/.ssh/deploy_key compose.deploy.yml "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/compose.deploy.yml"
+          if [ -f deploy.env ]; then
+            scp -i ~/.ssh/deploy_key deploy.env "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/.env"
+          fi
+
+      - name: Deploy application
+        if: steps.check.outputs.has_secrets == 'true'
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          IMAGE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          IMAGE_NAME=${GITHUB_REPOSITORY,,}
+          IMAGE_REF="ghcr.io/${IMAGE_NAME}:$IMAGE_TAG"
+          GHCR_LOGIN_USER=${GHCR_USERNAME:-$REPO_OWNER}
+          ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<DEPLOY
+set -euo pipefail
+cd "$DEPLOY_PATH"
+export IMAGE_REF="$IMAGE_REF"
+export GHCR_TOKEN="$GHCR_TOKEN"
+export GHCR_LOGIN_USER="$GHCR_LOGIN_USER"
+if [ -n "\$GHCR_TOKEN" ]; then
+  echo "\$GHCR_TOKEN" | docker login ghcr.io -u "\$GHCR_LOGIN_USER" --password-stdin
+fi
+docker pull "\$IMAGE_REF"
+IMAGE_REF="\$IMAGE_REF" docker compose -f compose.deploy.yml up -d
+IMAGE_REF="\$IMAGE_REF" docker compose -f compose.deploy.yml run --rm web python manage.py migrate --noinput
+IMAGE_REF="\$IMAGE_REF" docker compose -f compose.deploy.yml run --rm web python manage.py collectstatic --noinput
+DEPLOY

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "changelog-path": "CHANGELOG.md",
+  "release-search": true,
+  "include-v-in-tag": true,
+  "release-type": "python",
+  "packages": {
+    ".": {
+      "component": "nutrition",
+      "release-type": "python"
+    }
+  }
+}
