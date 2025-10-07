@@ -1,0 +1,4 @@
+Django>=5,<6
+xhtml2pdf
+pytest
+pytest-django
